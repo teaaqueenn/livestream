@@ -28,7 +28,7 @@ class Net(nn.Module):
         return F.log_softmax(x)
 
 model = Net()
-model.load_state_dict(torch.load(r"C:\Users\27GracieF\OneDrive - Taipei American School\Desktop\Livestream\Program\results\modelSDG_epoch5.pth"))
+model.load_state_dict(torch.load(r"C:\Users\27GracieF\Documents\livestream\Program\results\modelSDG_epoch10.pth"))
 model.eval()
 
 
@@ -41,7 +41,7 @@ transform = transforms.Compose([
 
 
 def upload_digit(digit_image, predicted_digit, confidence, data_dir):
-    print("uploading digits.")
+    print("[INFO] uploading digits...")
     """
     Saves the digit image and data (predicted digit, confidence) to a file.
     """
@@ -59,30 +59,30 @@ def upload_digit(digit_image, predicted_digit, confidence, data_dir):
 
 # Define paths and variables
 current_directory = os.getcwd()
-servingTeam = 1
+#servingTeam = 1
 currentframe = 0
 score1 = 10
-score2 = 5
+#score2 = 5
 #data_dir = 'data'
 #os.makedirs(data_dir, exist_ok=True)  # Create data directory if it doesn't exist
 
 # Video capture
-video_path = r"C:\Users\27GracieF\OneDrive - Taipei American School\Desktop\Livestream\Program\practiceFootage.mp4"
+video_path = r"C:\Users\27GracieF\Documents\livestream\Program\practiceFootage.mp4"
 
 pracVid = cv2.VideoCapture(video_path)
 
 while True:
-    print("While loop started.")
+    print("[INFO] While Loop Started...")
     time.sleep(1)
 
     # Read video frame
     ret, frame = pracVid.read()
-    print(ret)
+    print("[INFO] There is a Video File:", ret)
     # Process frame if video exists
     if ret:
 
         # Convert to grayscale, crop, threshold, and apply contrast/blur
-        print("transforming.")
+        print("[INFO] Transforming Frame...")
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         thresh = cv2.threshold(gray, 70, 220, cv2.THRESH_BINARY)[1]
         blur = cv2.medianBlur(thresh, 7)
@@ -90,34 +90,29 @@ while True:
 
         
         # Extract digit image and preprocess
-        print("processing potential regions.")
+        print("[INFO] Processing Potential Regions...")
         digit_img = transform(Image.fromarray(blur)).unsqueeze(0)
 
         # Run prediction and get results
         with torch.no_grad():
-            print("predicting.")
+            print("[INFO] predicting digit...")
             output = model(digit_img)
-            print("output shape:", output.shape)
+            print("[INFO] Output Shape:", output.shape)
             predicted_digit = torch.argmax(output, dim=1).item()
             score1 = predicted_digit
-            print("prediction:", predicted_digit)
+            print("[INFO] Prediction:", predicted_digit)
             confidence = torch.nn.functional.softmax(output, dim=1).max().item()
             confidence *= 100
-            print("confidence:", confidence)
-            print("transformed.")
-        
-        with open("Team 1 Score.txt", "a") as team1File, open("Team 2 Score.txt", "a") as team2File:
-            if servingTeam == 1:
+            print("[INFO] Confidence:", confidence)
+            print("[INFO] Transformed...")
+            
+        with open(r"C:\Users\27GracieF\Documents\livestream\Program\Score1.txt") as team1File:
+            if ret:
                 team1File.truncate(0)  # Clear existing content
                 team1File.write(str(score1))
                 team1File.flush()
-            elif servingTeam == 2:
-                team2File.truncate(0)  # Clear existing content
-                team2File.write(str(score2))
-                team2File.flush()
-
             else:
-                print("Error saving score for image")
+                print("[INFO] No Video...")
         
        # Display the frame with bounding boxes
         cv2.imshow('Video', frame)

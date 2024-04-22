@@ -1,29 +1,13 @@
 # imports
-from imutils.video import VideoStream
 from imutils.video import FPS
 from imutils.object_detection import non_max_suppression
 import numpy as np
-import argparse
 import imutils
 import time
 import cv2
 
 eastFile = r"C:\Users\27GracieF\Documents\livestream\Program\frozen_east_text_detection.pb"
 videoFile = r"C:\Users\27GracieF\Documents\livestream\Program\practiceFootage.mp4"
-
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--video", type=str,
-	help=r"C:\Users\27GracieF\Documents\livestream\Program\practiceFootage.mp4")
-ap.add_argument("-east", "--east", type=str,
-	help=r"C:\Users\27GracieF\Documents\livestream\Program\frozen_east_text_detection.pb")
-ap.add_argument("-c", "--min-confidence", type=float, default=0.5,
-	help="0.5")
-ap.add_argument("-w", "--width", type=int, default=320,
-	help="320")
-ap.add_argument("-e", "--height", type=int, default=320,
-	help="320")
-args = vars(ap.parse_args())
 
 def decode_predictions(scores, geometry):
 	# grab  number of rows and columns from the scores volume
@@ -47,7 +31,7 @@ def decode_predictions(scores, geometry):
 		for x in range(0, numCols):
 			# i stole the math for this so i can't really explain it
 			# not have enough probability --> ignore it
-			if scoresData[x] < args["min_confidence"]:
+			if scoresData[x] < 0.6:
 				continue
 			#  offset factor
     		# maps 4x smaller than input 
@@ -73,86 +57,76 @@ def decode_predictions(scores, geometry):
 
 # initialize og frame dimensions + new dimensions + ratio between
 (W, H) = (None, None)
-(newW, newH) = (args["width"], args["height"])
+(newW, newH) = (320, 320)
 (rW, rH) = (None, None)
+
 # define 2 output layer names for the model
-#  first is the output probabilities 
-# second used to derive the bounding box coordinates
 layerNames = [
-	"feature_fusion/Conv_7/Sigmoid",
-	"feature_fusion/concat_3"] # i googled this i have no idea what the naming convention is
+    "feature_fusion/Conv_7/Sigmoid",
+    "feature_fusion/concat_3"]
+
 # load the text detector
 print("[INFO] loading EAST text detector...")
 net = cv2.dnn.readNet(eastFile)
 
-# if no video path, use web cam
-if  not args.get("video", False):
-	print("[INFO] starting video stream...")
-	vs = VideoStream(src=0).start()
-	time.sleep(1.0)
-# otherwise use video file
-else:
-    vs = cv2.VideoCapture(videoFile)
+# load the video file
+print("[INFO] loading video file...")
+cap = cv2.VideoCapture(videoFile)
+
 # start the FPS estimator
 fps = FPS().start()
 
-# loop over frames from the video stream
 while True:
-	# grab the current frame, then handle if we are using a VideoStream or VideoCapture object
-	frame = vs.read()
-	frame = frame[1] if args.get("video", False) else frame
-	# check to see if we have reached the end of the stream
-	if frame is None:
-		break
-	# resize the frame (maintain the aspect ratio)
-	frame = imutils.resize(frame, width=1000)
-	orig = frame.copy()
-	# if our frame dimensions are None, we still need to compute the
-	# ratio of old frame dimensions to new frame dimensions
-	if W is None or H is None:
-		(H, W) = frame.shape[:2]
-		rW = W / float(newW)
-		rH = H / float(newH)
-	# resize the frame, this time ignoring aspect ratio
-	frame = cv2.resize(frame, (newW, newH))
+    ret, frame = cap.read()
+    if not ret:
+        print("[INFO] video file does exist...")
+        break
+    # resize the frame (maintain the aspect ratio)
+    frame = imutils.resize(frame, width=1000)
+    orig = frame.copy()
+    # if our frame dimensions are None, we still need to compute the
+    # ratio of old frame dimensions to new frame dimensions
+    if W is None or H is None:
+        (H, W) = frame.shape[:2]
+        rW = W / float(newW)
+        rH = H / float(newH)
+    # resize the frame, this time ignoring aspect ratio
+    frame = cv2.resize(frame, (newW, newH))
  
- 	# construct a blob? from the frame and then perform a forward pass? --> obtain the two output layer sets 
-    #(i have no idea wha thtis is, will do more research later)
-	blob = cv2.dnn.blobFromImage(frame, 1.0, (newW, newH),
-		(123.68, 116.78, 103.94), swapRB=True, crop=False)
-	net.setInput(blob)
-	(scores, geometry) = net.forward(layerNames)
-	# decode the predictions, then  apply non-maxima suppression to
-	# suppress weak, overlapping bounding boxes
-	(rects, confidences) = decode_predictions(scores, geometry)
-	boxes = non_max_suppression(np.array(rects), probs=confidences)
-	# loop over the bounding boxes
-	for (startX, startY, endX, endY) in boxes:
-		# scale the bounding box coordinates based on the respective
-		# ratios
-		startX = int(startX * rW)
-		startY = int(startY * rH)
-		endX = int(endX * rW)
-		endY = int(endY * rH)
-		# draw the bounding box on the frame
-		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+    # construct a blob from the frame and then perform a forward pass
+    blob = cv2.dnn.blobFromImage(frame, 1.0, (newW, newH),
+        (123.68, 116.78, 103.94), swapRB=True, crop=False)
+    net.setInput(blob)
+    (scores, geometry) = net.forward(layerNames)
+    # decode the predictions, then apply non-maxima suppression to
+    # suppress weak, overlapping bounding boxes
+    (rects, confidences) = decode_predictions(scores, geometry)
+    boxes = non_max_suppression(np.array(rects), probs=confidences)
+    # loop over the bounding boxes
+    for (startX, startY, endX, endY) in boxes:
+        # scale the bounding box coordinates based on the respective
+        # ratios
+        startX = int(startX * rW)
+        startY = int(startY * rH)
+        endX = int(endX * rW)
+        endY = int(endY * rH)
+        # draw the bounding box on the frame
+        cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
     # update the FPS counter
-	fps.update()
-	# show the output frame
-	cv2.imshow("Text Detection", orig)
-	key = cv2.waitKey(1) & 0xFF
-	# if the `q` key was pressed, break from the loop
-	if key == ord("q"):
-		break
+    fps.update()
+    # show the output frame
+    cv2.imshow("Text Detection", orig)
+    key = cv2.waitKey(1) & 0xFF
+    # if the `q` key was pressed, break from the loop
+    if key == ord("q"):
+        break
+
 # stop the timer and display FPS information
 fps.stop()
 print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
 print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-# if we are using a webcam, release the pointer
-if not args.get("video", False):
-	vs.stop()
-# otherwise, release the file pointer
-else:
-	vs.release()
+
+# release the file pointer
+cap.release()
 # close all windows
 cv2.destroyAllWindows()

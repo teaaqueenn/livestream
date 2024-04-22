@@ -7,13 +7,13 @@ import torch.nn.functional as F
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
-os.chdir(r"C:\Users\27GracieF\OneDrive - Taipei American School\Desktop\Livestream\Program")
+os.chdir(r"C:\Users\27GracieF\Documents\livestream\Program")
 current_directory = os.getcwd()
 res_dir = 'results'
 res_file_dir = os.path.join(current_directory, res_dir)
 os.makedirs(res_dir, exist_ok=True)
 
-n_epochs = 5
+n_epochs = 10
 batch_size_train = 64
 batch_size_test = 1000
 learning_rate = 0.01
