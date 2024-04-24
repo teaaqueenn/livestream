@@ -8,6 +8,10 @@ from PIL import Image
 from torchvision import transforms
 from torch import nn
 import torch.nn.functional as F
+from imutils.video import FPS
+from imutils.object_detection import non_max_suppression
+import imutils
+
 
 class Net(nn.Module):
     def __init__(self):
