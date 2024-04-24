@@ -78,48 +78,46 @@ fps = FPS().start()
 
 while True:
     ret, frame = cap.read()
-    if not ret:
-        print("[INFO] video file does exist...")
-        break
-    # resize the frame (maintain the aspect ratio)
-    frame = imutils.resize(frame, width=1000)
-    orig = frame.copy()
-    # if our frame dimensions are None, we still need to compute the
-    # ratio of old frame dimensions to new frame dimensions
-    if W is None or H is None:
-        (H, W) = frame.shape[:2]
-        rW = W / float(newW)
-        rH = H / float(newH)
-    # resize the frame, this time ignoring aspect ratio
-    frame = cv2.resize(frame, (newW, newH))
- 
-    # construct a blob from the frame and then perform a forward pass
-    blob = cv2.dnn.blobFromImage(frame, 1.0, (newW, newH),
-        (123.68, 116.78, 103.94), swapRB=True, crop=False)
-    net.setInput(blob)
-    (scores, geometry) = net.forward(layerNames)
-    # decode the predictions, then apply non-maxima suppression to
-    # suppress weak, overlapping bounding boxes
-    (rects, confidences) = decode_predictions(scores, geometry)
-    boxes = non_max_suppression(np.array(rects), probs=confidences)
-    # loop over the bounding boxes
-    for (startX, startY, endX, endY) in boxes:
-        # scale the bounding box coordinates based on the respective
-        # ratios
-        startX = int(startX * rW)
-        startY = int(startY * rH)
-        endX = int(endX * rW)
-        endY = int(endY * rH)
-        # draw the bounding box on the frame
-        cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
-    # update the FPS counter
-    fps.update()
-    # show the output frame
-    cv2.imshow("Text Detection", orig)
-    key = cv2.waitKey(1) & 0xFF
-    # if the `q` key was pressed, break from the loop
-    if key == ord("q"):
-        break
+    if ret:
+        # resize the frame (maintain the aspect ratio)
+        frame = imutils.resize(frame, width=1000)
+        orig = frame.copy()
+        # if our frame dimensions are None, we still need to compute the
+        # ratio of old frame dimensions to new frame dimensions
+        if W is None or H is None:
+            (H, W) = frame.shape[:2]
+            rW = W / float(newW)
+            rH = H / float(newH)
+        # resize the frame, this time ignoring aspect ratio
+        frame = cv2.resize(frame, (newW, newH))
+    
+        # construct a blob from the frame and then perform a forward pass
+        blob = cv2.dnn.blobFromImage(frame, 1.0, (newW, newH),
+            (123.68, 116.78, 103.94), swapRB=True, crop=False)
+        net.setInput(blob)
+        (scores, geometry) = net.forward(layerNames)
+        # decode the predictions, then apply non-maxima suppression to
+        # suppress weak, overlapping bounding boxes
+        (rects, confidences) = decode_predictions(scores, geometry)
+        boxes = non_max_suppression(np.array(rects), probs=confidences)
+        # loop over the bounding boxes
+        for (startX, startY, endX, endY) in boxes:
+            # scale the bounding box coordinates based on the respective
+            # ratios
+            startX = int(startX * rW)
+            startY = int(startY * rH)
+            endX = int(endX * rW)
+            endY = int(endY * rH)
+            # draw the bounding box on the frame
+            cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+        # update the FPS counter
+        fps.update()
+        # show the output frame
+        cv2.imshow("Text Detection", orig)
+        key = cv2.waitKey(1) & 0xFF
+        # if the `q` key was pressed, break from the loop
+        if key == ord("q"):
+            break
 
 # stop the timer and display FPS information
 fps.stop()
