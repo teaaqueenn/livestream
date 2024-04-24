@@ -106,7 +106,7 @@ while True:
             print("[INFO] Confidence:", confidence)
             print("[INFO] Transformed...")
             
-        with open(r"C:\Users\27GracieF\Documents\livestream\Program\Score1.txt") as team1File:
+        with open(r"C:\Users\27GracieF\Documents\livestream\Program\Score1.txt", "w") as team1File:
             if ret:
                 team1File.truncate(0)  # Clear existing content
                 team1File.write(str(score1))
