@@ -87,7 +87,9 @@ while True:
 
         # Convert to grayscale, crop, threshold, and apply contrast/blur
         print("[INFO] Transforming Frame...")
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        crop = frame[40:100, 45:80]
+        cv2.imshow("crop",crop)
+        gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
         thresh = cv2.threshold(gray, 70, 220, cv2.THRESH_BINARY)[1]
         blur = cv2.medianBlur(thresh, 7)
 
@@ -112,9 +114,10 @@ while True:
             
         with open(r"C:\Users\27GracieF\Documents\livestream\Program\Score1.txt", "w") as team1File:
             if ret:
-                team1File.truncate(0)  # Clear existing content
-                team1File.write(str(score1))
-                team1File.flush()
+                if confidence >= 45:
+                    team1File.truncate(0)  # Clear existing content
+                    team1File.write(str(score1))
+                    team1File.flush()
             else:
                 print("[INFO] No Video...")
         

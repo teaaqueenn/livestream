@@ -104,10 +104,10 @@ while True:
         for (startX, startY, endX, endY) in boxes:
             # scale the bounding box coordinates based on the respective
             # ratios
-            startX = int(startX * rW)
-            startY = int(startY * rH)
-            endX = int(endX * rW)
-            endY = int(endY * rH)
+            startX = int(startX * rW * 1.2)
+            startY = int(startY * rH * 1.2)
+            endX = int(endX * rW * 1.2)
+            endY = int(endY * rH * 1.2)
             # draw the bounding box on the frame
             cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
         # update the FPS counter

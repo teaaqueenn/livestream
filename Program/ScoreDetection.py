@@ -173,16 +173,19 @@ while True:
         for (startX, startY, endX, endY) in boxes:
             # scale the bounding box coordinates based on the respective
             # ratios
-            startX = int(startX * rW)
-            startY = int(startY * rH)
-            endX = int(endX * rW)
-            endY = int(endY * rH)
+            startX = int(startX * rW * 1.2)
+            startY = int(startY * rH * 1.2)
+            endX = int(endX * rW * 1.2)
+            endY = int(endY * rH * 1.2)
 
         # Convert to grayscale, crop, threshold, and apply contrast/blur
             print("[INFO] Transforming Frame...")
             crop = frame[startY:endY, startX:endX]
-            cv2.imshow("cropped", crop)
-            cv2.waitKey(0)
+            if crop.size == 0:
+                print("[WARNING] Crop region is empty. Skipping...")
+                continue
+            else:
+                print("[INFO] crop locations...", startY, endY, startX, endX)
             gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
             thresh = cv2.threshold(gray, 70, 220, cv2.THRESH_BINARY)[1]
             blur = cv2.medianBlur(thresh, 7)
@@ -212,6 +215,11 @@ while True:
                 else:
                     print("[INFO] Could not upload scores...")
                     break
+            cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+        # update the FPS counter
+        fps.update()
+        # show the output frame
+        cv2.imshow("Text Detection", orig)
         
        # Display the frame with bounding boxes
         cv2.imshow('Video', frame)
