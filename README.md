@@ -4,7 +4,8 @@
 **Project Overview**
 
 Over a few weeks, I have been working on a solution designed to enhance the IASAS Live Stream—a major event that connects student communities across international schools for various activities and competitions.
-The goal of this project was to improve text detection during the live stream, which is crucial for displaying accurate and real-time information. 
+The goal of this project was to improve text detection during the live stream, which is crucial for displaying accurate and real-time information.
+
 
 
 **Investigating Solutions**
@@ -27,3 +28,10 @@ In the final stages, I explored an additional program for generating bounding bo
 **Final Thoughts**
 
 In summary, the model is effective and accurate, though it has some inconsistencies. Moving forward, I plan to create a custom dataset to further improve the model’s accuracy for the IASAS Live Stream.
+
+Here's the livestream!:
+
+[Day 1 Live](https://www.youtube.com/live/PQkJV1KT2Nc?si=OfUnKiXZVs3_ZEJe)
+[Day 2 Live](https://www.youtube.com/live/ZnYNlNviWQg?si=in6wdwZmenLDp8nz)
+[Day 3 Live](https://www.youtube.com/live/CYURVB4-myc?si=Uu9hq2JZONaFUrwq)
+
