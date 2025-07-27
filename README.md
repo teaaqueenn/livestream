@@ -1,5 +1,11 @@
 # livestream
 
+TLDR; Developed custom OCR using PyTorch for real-time IASAS sports streams; improved text detection accuracy to 99% after 10 training epochs. Repo is version 3/20 due to early GitHub inexperience; includes notes on model iterations and next steps.
+
+⚠️ Early project—limited documentation because it was built as a freshman under time constraints for a live IASAS event. Deployed successfully (proof:[Day 1 Live](https://www.youtube.com/live/PQkJV1KT2Nc?si=OfUnKiXZVs3_ZEJe)
+[Day 2 Live](https://www.youtube.com/live/ZnYNlNviWQg?si=in6wdwZmenLDp8nz)
+[Day 3 Live](https://www.youtube.com/live/CYURVB4-myc?si=Uu9hq2JZONaFUrwq)).”
+
 
 **Project Overview**
 
