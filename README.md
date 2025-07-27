@@ -5,6 +5,7 @@
 
 Over a few weeks, I have been working on a solution designed to enhance the IASAS Live Stream—a major event that connects student communities across international schools for various activities and competitions.
 The goal of this project was to improve text detection during the live stream, which is crucial for displaying accurate and real-time information.
+Unfortunatley my computer broke down, so this is only Version 3 of 20 because I did not know how to commit (to git, not people) as a freshman. I have provided livestream links at the end of this document.
 
 
 
